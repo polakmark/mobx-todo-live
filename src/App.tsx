@@ -50,13 +50,21 @@ const useTodos = () => {
   return context;
 };
 
-const todoStore = new TodoStore();
+const TodoProvider: React.FC = ({ children }) => {
+  const todoStore = new TodoStore();
+
+  return (
+    <TodoContext.Provider value={todoStore}>{children}</TodoContext.Provider>
+  );
+};
 
 interface TodoItemProps {
   todo: ITodo;
 }
 
 export const TodoItem: React.FC<TodoItemProps> = observer(({ todo }) => {
+  const todoStore = useTodos();
+
   return (
     <li>
       <span
@@ -79,6 +87,8 @@ export const TodoItem: React.FC<TodoItemProps> = observer(({ todo }) => {
 });
 
 export const TodoList = observer(() => {
+  const todoStore = useTodos();
+
   return (
     <ul>
       {todoStore.todos.map((todo) => (
@@ -89,6 +99,7 @@ export const TodoList = observer(() => {
 });
 
 export const TodoForm = () => {
+  const todoStore = useTodos();
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   return (
