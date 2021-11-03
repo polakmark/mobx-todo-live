@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { observer } from "mobx-react-lite";
-
+import React from "react";
 interface ITodo {
   text: string;
   isDone: boolean;
@@ -66,7 +66,7 @@ export const TodoItem: React.FC<TodoItemProps> = observer(({ todo }) => {
   );
 });
 
-export const App = observer(() => {
+export const TodoList = observer(() => {
   return (
     <ul>
       {todoStore.todos.map((todo) => (
@@ -75,3 +75,29 @@ export const App = observer(() => {
     </ul>
   );
 });
+
+export const TodoForm = () => {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+
+        todoStore.add(inputRef.current!.value);
+        inputRef.current!.value = "";
+      }}
+    >
+      <input ref={inputRef} type="text" />
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export const App = () => {
+  return (
+    <>
+      <TodoList />
+    </>
+  );
+};
