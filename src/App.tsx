@@ -1,6 +1,20 @@
-import { action, computed, makeObservable, observable } from "mobx";
+import {
+  action,
+  computed,
+  makeObservable,
+  observable,
+  reaction,
+  runInAction,
+} from "mobx";
 import { observer } from "mobx-react-lite";
 import React from "react";
+
+const myAsyncPromise = () =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve("done");
+    }, 1000);
+  });
 interface ITodo {
   text: string;
   isDone: boolean;
@@ -16,8 +30,14 @@ class TodoStore {
     { text: "todo2", isDone: true },
   ];
 
-  @action add(todoText: string) {
-    this.todos.push({ text: todoText, isDone: false });
+  @action _add(todo: ITodo) {
+    this.todos.push(todo);
+  }
+
+  @action async add(todoText: string) {
+    const result = await myAsyncPromise();
+    this._add({ text: todoText, isDone: false });
+    console.log(result);
   }
 
   @action markDone(todo: ITodo) {
@@ -92,7 +112,7 @@ export const TodoList = observer(() => {
   return (
     <ul>
       {todoStore.todos.map((todo) => (
-        <TodoItem todo={todo} />
+        <TodoItem key={todo.text} todo={todo} />
       ))}
     </ul>
   );
@@ -119,6 +139,14 @@ export const TodoForm = () => {
 
 export const TodoCount: React.FC = observer(() => {
   const todoStore = useTodos();
+
+  React.useEffect(() => {
+    reaction(
+      () => todoStore.todos.length,
+      () => console.log(todoStore.todos)
+    );
+  }, []);
+
   return <span>{todoStore.todoCount}</span>;
 });
 
