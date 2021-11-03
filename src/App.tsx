@@ -147,6 +147,10 @@ export const TodoCount: React.FC = observer(() => {
     );
   }, []);
 
+  React.useEffect(() => {
+    console.log("classic effect", todoStore.todos.length, todoStore.todos);
+  }, [todoStore.todos.length]);
+
   return <span>{todoStore.todoCount}</span>;
 });
 
