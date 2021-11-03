@@ -120,8 +120,10 @@ export const TodoForm = () => {
 export const App = () => {
   return (
     <>
-      <TodoForm />
-      <TodoList />
+      <TodoProvider>
+        <TodoForm />
+        <TodoList />
+      </TodoProvider>
     </>
   );
 };
