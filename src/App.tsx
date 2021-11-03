@@ -10,7 +10,10 @@ class TodoStore {
     makeObservable(this);
   }
 
-  @observable todos: ITodo[] = [];
+  @observable todos: ITodo[] = [
+    { text: "todo1", isDone: false },
+    { text: "todo2", isDone: true },
+  ];
 
   @action add(todoText: string) {
     this.todos.push({ text: todoText, isDone: false });
@@ -34,4 +37,22 @@ class TodoStore {
   }
 }
 
-export const App = () => null;
+const todoStore = new TodoStore();
+
+interface TodoItemProps {
+  todo: ITodo;
+}
+
+export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
+  return <li>{todo.text}</li>;
+};
+
+export const App = () => {
+  return (
+    <ul>
+      {todoStore.todos.map((todo) => (
+        <TodoItem todo={todo} />
+      ))}
+    </ul>
+  );
+};
