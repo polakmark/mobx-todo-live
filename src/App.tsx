@@ -38,6 +38,18 @@ class TodoStore {
   }
 }
 
+const TodoContext = React.createContext<TodoStore | undefined>(undefined);
+
+const useTodos = () => {
+  const context = React.useContext(TodoContext);
+
+  if (!context) {
+    throw new Error("Todostore not initialized");
+  }
+
+  return context;
+};
+
 const todoStore = new TodoStore();
 
 interface TodoItemProps {
@@ -97,6 +109,7 @@ export const TodoForm = () => {
 export const App = () => {
   return (
     <>
+      <TodoForm />
       <TodoList />
     </>
   );
