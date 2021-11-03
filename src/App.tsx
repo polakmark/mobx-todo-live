@@ -182,6 +182,14 @@ export const TodoCount: React.FC = observer(() => {
   return <span>{todoStore.todoCount}</span>;
 });
 
+const Auth: React.FC = observer(() => {
+  return authStore.isLoggedIn ? (
+    <span>Logged in</span>
+  ) : (
+    <button onClick={() => authStore.login()}>Login</button>
+  );
+});
+
 export const App = () => {
   return (
     <>
@@ -189,6 +197,7 @@ export const App = () => {
         <TodoForm />
         <TodoList />
         <TodoCount />
+        <Auth />
       </TodoProvider>
     </>
   );
