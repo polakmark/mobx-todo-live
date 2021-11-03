@@ -1,4 +1,5 @@
 import { action, computed, makeObservable, observable } from "mobx";
+import { observer } from "mobx-react-lite";
 
 interface ITodo {
   text: string;
@@ -43,11 +44,29 @@ interface TodoItemProps {
   todo: ITodo;
 }
 
-export const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
-  return <li>{todo.text}</li>;
-};
+export const TodoItem: React.FC<TodoItemProps> = observer(({ todo }) => {
+  return (
+    <li>
+      <span
+        style={{
+          textDecoration: todo.isDone ? "line-through" : "none",
+        }}
+      >
+        {todo.text}
+      </span>
+      <button
+        onClick={() =>
+          todo.isDone ? todoStore.markUndone(todo) : todoStore.markDone(todo)
+        }
+      >
+        {todo.isDone ? "Mark undone" : "Mark done"}
+      </button>
+      <button onClick={() => todoStore.remove(todo)}>Remove</button>
+    </li>
+  );
+});
 
-export const App = () => {
+export const App = observer(() => {
   return (
     <ul>
       {todoStore.todos.map((todo) => (
@@ -55,4 +74,4 @@ export const App = () => {
       ))}
     </ul>
   );
-};
+});
