@@ -1,6 +1,7 @@
 import {
   action,
   computed,
+  IReactionDisposer,
   makeObservable,
   observable,
   reaction,
@@ -20,8 +21,25 @@ interface ITodo {
   isDone: boolean;
 }
 
-class TodoStore {
+class AuthStore {
   constructor() {
+    makeObservable(this);
+  }
+
+  @observable isLoggedIn: boolean = false;
+
+  @action login() {
+    this.isLoggedIn = true;
+  }
+}
+
+const authStore = new AuthStore();
+
+class TodoStore {
+  protected readonly authStore: AuthStore;
+
+  constructor(authStore: AuthStore) {
+    this.authStore = authStore;
     makeObservable(this);
   }
 
@@ -31,7 +49,11 @@ class TodoStore {
   ];
 
   @action _add(todo: ITodo) {
-    this.todos.push(todo);
+    if (this.authStore.isLoggedIn) {
+      this.todos.push(todo);
+    } else {
+      console.error("not authorized");
+    }
   }
 
   @action async add(todoText: string) {
@@ -71,7 +93,7 @@ const useTodos = () => {
 };
 
 const TodoProvider: React.FC = ({ children }) => {
-  const todoStore = new TodoStore();
+  const todoStore = new TodoStore(authStore);
 
   return (
     <TodoContext.Provider value={todoStore}>{children}</TodoContext.Provider>
@@ -139,12 +161,18 @@ export const TodoForm = () => {
 
 export const TodoCount: React.FC = observer(() => {
   const todoStore = useTodos();
+  const disposer = React.useRef<IReactionDisposer | undefined>();
 
   React.useEffect(() => {
-    reaction(
-      () => todoStore.todos.length,
-      () => console.log(todoStore.todos)
-    );
+    if (!disposer.current) {
+      disposer.current = reaction(
+        () => todoStore.todos.length,
+        () => console.log(todoStore.todos)
+      );
+    }
+    return () => {
+      disposer.current?.();
+    };
   }, []);
 
   React.useEffect(() => {
