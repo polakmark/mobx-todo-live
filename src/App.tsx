@@ -117,12 +117,18 @@ export const TodoForm = () => {
   );
 };
 
+export const TodoCount: React.FC = observer(() => {
+  const todoStore = useTodos();
+  return <span>{todoStore.todoCount}</span>;
+});
+
 export const App = () => {
   return (
     <>
       <TodoProvider>
         <TodoForm />
         <TodoList />
+        <TodoCount />
       </TodoProvider>
     </>
   );
