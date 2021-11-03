@@ -1,45 +1,37 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import { action, computed, makeObservable, observable } from "mobx";
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
+interface ITodo {
+  text: string;
+  isDone: boolean;
 }
 
-export default App
+class TodoStore {
+  constructor() {
+    makeObservable(this);
+  }
+
+  @observable todos: ITodo[] = [];
+
+  @action add(todoText: string) {
+    this.todos.push({ text: todoText, isDone: false });
+  }
+
+  @action markDone(todo: ITodo) {
+    todo.isDone = true;
+  }
+
+  @action markUndone(todo: ITodo) {
+    todo.isDone = false;
+  }
+
+  @action remove(todo: ITodo) {
+    const index = this.todos.findIndex((e) => e === todo);
+    this.todos.splice(index, 1);
+  }
+
+  @computed get todoCount() {
+    return this.todos.length;
+  }
+}
+
+export const App = () => null;
